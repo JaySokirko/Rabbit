@@ -9,6 +9,9 @@
     <string name="action_settings">Settings</string>
     <string name="email">email</string>
     <string name="password">password</string>
-    <string name="sign_up">Sign up</string>
+    <string name="sign_up">sign up</string>
     <string name="forgot_your_password">Forgot your password?</string>
+    <string name="create_new">create new</string>
+    <string name="enter_an_email">enter your email</string>
+    <string name="enter_your_password">minimum 6 characters</string>
 </resources>

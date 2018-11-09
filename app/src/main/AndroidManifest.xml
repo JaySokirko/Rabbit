@@ -24,9 +24,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.jay.rabbit.activity.RegistratedUserActivity" />
+        <activity android:name="com.jay.rabbit.activity.RegistratedUserActivity"
+            android:theme="@style/AppTheme"/>
 
-        <activity android:name="com.jay.rabbit.activity.AuthorizedUserActivity" />
+        <activity android:name="com.jay.rabbit.activity.AuthorizedUserActivity"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

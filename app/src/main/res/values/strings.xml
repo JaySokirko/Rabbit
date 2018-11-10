@@ -14,4 +14,5 @@
     <string name="create_new">create new</string>
     <string name="enter_an_email">enter your email</string>
     <string name="enter_your_password">minimum 6 characters</string>
+    <string name="sign_in_with">Sign in with :</string>
 </resources>

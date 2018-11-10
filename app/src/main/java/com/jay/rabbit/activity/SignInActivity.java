@@ -2,18 +2,14 @@ package com.jay.rabbit.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.PorterDuff;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,22 +19,32 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.jay.rabbit.R;
+import com.jay.rabbit.firebase.GoogleAuthorization;
 
 
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = "LOG_TAG";
+    private static final int RC_SIGN_IN = 1;
+
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseAuth mAuth;
+//    private GoogleApiClient googleSignInClient;
+
     private AnimationDrawable backgroundAnimation;
-    private Drawable accentBackground;
-    private Drawable normalBackground;
+    private Drawable accentRectangleBackground;
+    private Drawable normalRectangleBackground;
+    private Drawable accentCircleBackground;
+    private Drawable normalCircleBackground;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
 
     private EditText emailEditText;
     private EditText passwordEditText;
@@ -50,7 +56,12 @@ public class SignInActivity extends AppCompatActivity {
     private Button createAccountBtn;
     private TextView emailErrorTextView;
     private TextView passwordErrorTextView;
+    private ImageView googleLoginBtn;
+    private RelativeLayout parentLayout;
 
+    private GoogleAuthorization googleAuthorization;
+
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,15 +71,21 @@ public class SignInActivity extends AppCompatActivity {
 
         RelativeLayout parentLayout = findViewById(R.id.parent_view);
 
-        mAuth = FirebaseAuth.getInstance();
-
         backgroundAnimation = (AnimationDrawable) parentLayout.getBackground();
         backgroundAnimation.setExitFadeDuration(4000);
 
-        accentBackground = getResources().getDrawable(R.drawable.shape_rounded_rectangle_accent);
-        normalBackground = getResources().getDrawable(R.drawable.shape_rounded_rectangle_white);
+        accentRectangleBackground = getResources().getDrawable(R.drawable.shape_rounded_rectangle_accent);
+        normalRectangleBackground = getResources().getDrawable(R.drawable.shape_rounded_rectangle_white);
+        accentCircleBackground = getResources().getDrawable(R.drawable.shape_circle_accent);
+        normalCircleBackground = getResources().getDrawable(R.drawable.shape_circle_white);
 
-        somemethod();
+        preferences = this.getSharedPreferences("Settings", MODE_PRIVATE);
+        editor = preferences.edit();
+
+
+        mAuth = FirebaseAuth.getInstance();
+        googleAuthorization = new GoogleAuthorization(this, mAuth);
+        authStateListener = googleAuthorization.getAuthStateListener();
 
         animationOnActivityStart();
 
@@ -76,9 +93,15 @@ public class SignInActivity extends AppCompatActivity {
 
         onPasswordEditTextClickListener();
 
-        emailEditText.setText("a@gmail.com");
+        emailEditText.setText("sokirko0601@gmail.com");
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mAuth.addAuthStateListener(authStateListener);
+    }
 
     @Override
     protected void onResume() {
@@ -98,6 +121,11 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     /**
      * Initialization all views
      */
@@ -111,6 +139,8 @@ public class SignInActivity extends AppCompatActivity {
         signInLayout = findViewById(R.id.layout_sign_in);
         forgotPasswordBan = findViewById(R.id.button_forgot_password);
         createAccountBtn = findViewById(R.id.button_new_account);
+        googleLoginBtn = findViewById(R.id.google_login);
+        parentLayout = findViewById(R.id.parent_view);
 
         emailErrorTextView = findViewById(R.id.text_view_email_error);
         emailErrorTextView.setVisibility(View.INVISIBLE);
@@ -148,11 +178,27 @@ public class SignInActivity extends AppCompatActivity {
      *
      * @param view sign in button
      */
-
     public void onSignInClick(View view) {
 
-        singUpBtn.setBackground(accentBackground);
+        singUpBtn.setBackground(accentRectangleBackground);
+    }
 
+    /**
+     * Sign in with google.
+     *
+     * @param view google sign in button
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    public void onGoogleSignIn(View view) {
+
+        googleLoginBtn.setBackground(accentCircleBackground);
+        startProgressAnimation();
+
+        googleSignIn();
+
+        new Handler().postDelayed(() -> googleLoginBtn.setBackground(normalCircleBackground),500);
+
+       parentLayout.setOnTouchListener(null);
     }
 
 
@@ -163,7 +209,7 @@ public class SignInActivity extends AppCompatActivity {
      */
     public void onCreateNewUserClick(View view) {
 
-        createAccountBtn.setBackground(accentBackground);
+        createAccountBtn.setBackground(accentRectangleBackground);
 
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
@@ -174,15 +220,15 @@ public class SignInActivity extends AppCompatActivity {
             emailEditText.setBackground(getResources().getDrawable(R.drawable.shape_botton_left_corner_0_error));
 
         } else if (password.length() < 6) {
-           passwordErrorTextView.setText(getResources().getString(R.string.enter_your_password));
-           passwordErrorTextView.setVisibility(View.VISIBLE);
-           passwordEditText.setBackground(getResources().getDrawable(R.drawable.shape_botton_left_corner_0_error));
+            passwordErrorTextView.setText(getResources().getString(R.string.enter_your_password));
+            passwordErrorTextView.setVisibility(View.VISIBLE);
+            passwordEditText.setBackground(getResources().getDrawable(R.drawable.shape_botton_left_corner_0_error));
 
         } else {
             registration(email, password);
         }
 
-        new Handler().postDelayed(() -> createAccountBtn.setBackground(normalBackground), 500);
+        new Handler().postDelayed(() -> createAccountBtn.setBackground(normalRectangleBackground), 500);
     }
 
 
@@ -217,17 +263,30 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    public void somemethod() {
-        authStateListener = firebaseAuth -> {
-            FirebaseUser currentUser = mAuth.getCurrentUser();
 
-            if (currentUser != null) {
+    private void googleSignIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleAuthorization.getGoogleApiClient());
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
 
 
-            } else {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                googleAuthorization.fireBaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Toast.makeText(this,"Google Sign In failed", Toast.LENGTH_SHORT).show();
             }
-        };
+        }
+        stopProgressAnimation();
     }
 
 
@@ -249,6 +308,12 @@ public class SignInActivity extends AppCompatActivity {
     }
 
 
+    /**
+     *  Create new user
+     *
+     * @param email email of new user
+     * @param password password if new user
+     */
     public void registration(String email, String password) {
 
         startProgressAnimation();
@@ -260,7 +325,6 @@ public class SignInActivity extends AppCompatActivity {
                         startActivity(new Intent(SignInActivity.this, RegistratedUserActivity.class));
                     } else {
                         // If sign in fails, display a message to the user.
-
                         Toast.makeText(SignInActivity.this, "error", Toast.LENGTH_SHORT).show();
                     }
 
@@ -275,14 +339,12 @@ public class SignInActivity extends AppCompatActivity {
         logoImView.setImageResource(R.drawable.logo_animated_progress);
         Drawable drawable = logoImView.getDrawable();
         ((Animatable) drawable).start();
-
     }
 
 
     private void stopProgressAnimation() {
 
         logoImView.setImageResource(R.drawable.logo_rabbit);
-
     }
 
 }

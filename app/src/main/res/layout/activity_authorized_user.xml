@@ -11,4 +11,19 @@
         android:layout_height="wrap_content"
         android:text="you were authorized"
         android:layout_gravity="center"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logout"
+        android:text="log out"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="50dp"/>
+
+    <ImageView
+        android:id="@+id/user_photo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"/>
 </FrameLayout>

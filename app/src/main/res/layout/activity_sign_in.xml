@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_view"
     android:layout_width="match_parent"
@@ -14,6 +13,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_centerInParent="true"
+        android:contentDescription="@drawable/logo_rabbit"
         android:src="@drawable/logo_rabbit" />
 
     <LinearLayout
@@ -39,21 +39,21 @@
             android:textColor="@color/colorWhite"
             android:textColorHint="@color/colorGray50"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/text_view_email_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:textColor="@color/colorRed400"
-            android:text="error"
-            android:textSize="13sp"/>
+            android:textSize="13sp" />
 
         <EditText
-            android:layout_marginTop="30dp"
             android:id="@+id/edit_text_password"
             android:layout_width="250dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
+            android:layout_marginTop="30dp"
             android:background="@drawable/shape_bottom_lef_corner_0"
             android:gravity="center"
             android:hint="@string/password"
@@ -63,14 +63,14 @@
             android:textColor="@color/colorWhite"
             android:textColorHint="@color/colorGray50"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/text_view_password_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:textColor="@color/colorRed400"
-            android:text="error"
-            android:textSize="13sp"/>
+            android:textSize="13sp" />
 
     </LinearLayout>
 
@@ -128,7 +128,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="Sign in with :"
+            android:text="@string/sign_in_with"
             android:textColor="@color/colorWhite"
             android:textSize="14sp" />
 
@@ -138,10 +138,13 @@
             android:layout_weight="1" />
 
         <ImageView
+            android:id="@+id/google_login"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:background="@drawable/shape_circle_white"
+            android:contentDescription="@drawable/shape_circle_white"
+            android:onClick="onGoogleSignIn"
             android:padding="8dp"
             android:src="@drawable/ic_google" />
 
@@ -155,6 +158,7 @@
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:background="@drawable/shape_circle_white"
+            android:contentDescription="@drawable/shape_circle_white"
             android:padding="8dp"
             android:src="@drawable/ic_facebook" />
 
@@ -168,6 +172,7 @@
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:background="@drawable/shape_circle_white"
+            android:contentDescription="@drawable/shape_circle_white"
             android:padding="8dp"
             android:src="@drawable/ic_twitter" />
 

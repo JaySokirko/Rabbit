@@ -19,24 +19,31 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.jay.rabbit.R;
-import com.jay.rabbit.firebase.GoogleAuthorization;
+import com.jay.rabbit.firebase.GoogleSignIn;
 
 
 public class SignInActivity extends AppCompatActivity {
 
     private static final String TAG = "LOG_TAG";
-    private static final int RC_SIGN_IN = 1;
+    private static final int GOOGLE_SING_IN = 1;
 
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseAuth mAuth;
-//    private GoogleApiClient googleSignInClient;
 
     private AnimationDrawable backgroundAnimation;
     private Drawable accentRectangleBackground;
@@ -45,6 +52,7 @@ public class SignInActivity extends AppCompatActivity {
     private Drawable normalCircleBackground;
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
+    private CallbackManager callbackManager;
 
     private EditText emailEditText;
     private EditText passwordEditText;
@@ -52,14 +60,15 @@ public class SignInActivity extends AppCompatActivity {
     private Button singUpBtn;
     private ImageView logoImView;
     private LinearLayout signInLayout;
-    private Button forgotPasswordBan;
+    private Button forgotPasswordBtn;
     private Button createAccountBtn;
     private TextView emailErrorTextView;
     private TextView passwordErrorTextView;
     private ImageView googleLoginBtn;
     private RelativeLayout parentLayout;
+    private ImageView faceBookLoginBtn;
 
-    private GoogleAuthorization googleAuthorization;
+    private GoogleSignIn googleAuthorization;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -84,7 +93,7 @@ public class SignInActivity extends AppCompatActivity {
 
 
         mAuth = FirebaseAuth.getInstance();
-        googleAuthorization = new GoogleAuthorization(this, mAuth);
+        googleAuthorization = new GoogleSignIn(this, mAuth);
         authStateListener = googleAuthorization.getAuthStateListener();
 
         animationOnActivityStart();
@@ -94,6 +103,59 @@ public class SignInActivity extends AppCompatActivity {
         onPasswordEditTextClickListener();
 
         emailEditText.setText("sokirko0601@gmail.com");
+
+
+    }
+
+    public void faceBookAuthorization(){
+        // Initialize Facebook Login button
+        callbackManager = CallbackManager.Factory.create();
+        LoginButton loginButton = findViewById(R.id.facebook_login);
+        loginButton.setReadPermissions("email", "public_profile");
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+                // ...
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+                // ...
+            }
+        });
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithCredential:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        editor.putString("user name", user.getDisplayName());
+                        editor.putString("user photo", user.getPhotoUrl().toString());
+                        startActivity(new Intent(SignInActivity.this, AuthorizedUserActivity.class));
+
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.d(TAG, "signInWithCredential:failure", task.getException());
+                        Toast.makeText(SignInActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                });
     }
 
     @Override
@@ -118,6 +180,8 @@ public class SignInActivity extends AppCompatActivity {
 
         if (backgroundAnimation != null && backgroundAnimation.isRunning())
             backgroundAnimation.stop();
+
+        stopProgressAnimation();
     }
 
 
@@ -137,11 +201,11 @@ public class SignInActivity extends AppCompatActivity {
         singUpBtn = findViewById(R.id.button_sing_up);
         logoImView = findViewById(R.id.image_view_logo);
         signInLayout = findViewById(R.id.layout_sign_in);
-        forgotPasswordBan = findViewById(R.id.button_forgot_password);
+        forgotPasswordBtn = findViewById(R.id.button_forgot_password);
         createAccountBtn = findViewById(R.id.button_new_account);
         googleLoginBtn = findViewById(R.id.google_login);
         parentLayout = findViewById(R.id.parent_view);
-
+        faceBookLoginBtn = findViewById(R.id.facebook_button);
         emailErrorTextView = findViewById(R.id.text_view_email_error);
         emailErrorTextView.setVisibility(View.INVISIBLE);
 
@@ -167,7 +231,7 @@ public class SignInActivity extends AppCompatActivity {
             registrationLayout.animate().setDuration(1000).alpha(1).start();
             singUpBtn.animate().setDuration(1000).alpha(1).start();
             signInLayout.animate().setDuration(1000).alpha(1).start();
-            forgotPasswordBan.animate().setDuration(1000).alpha(1).start();
+            forgotPasswordBtn.animate().setDuration(1000).alpha(1).start();
             createAccountBtn.animate().setDuration(1000).alpha(1).start();
         }, 1500);
     }
@@ -194,13 +258,25 @@ public class SignInActivity extends AppCompatActivity {
         googleLoginBtn.setBackground(accentCircleBackground);
         startProgressAnimation();
 
-        googleSignIn();
+        try {
+            googleSignIn();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-        new Handler().postDelayed(() -> googleLoginBtn.setBackground(normalCircleBackground),500);
-
-       parentLayout.setOnTouchListener(null);
+        new Handler().postDelayed(() -> googleLoginBtn.setBackground(normalCircleBackground), 500);
     }
+    
 
+    /**
+     * Sign in with facebook.
+     *
+     * @param view facebook sign in button
+     */
+    public void onFaceBookSignIn(View view) {
+        faceBookAuthorization();
+        Log.d(TAG, "onFaceBookSignIn: ");
+    }
 
     /**
      * If the user does has not an account, then he is registered
@@ -230,6 +306,7 @@ public class SignInActivity extends AppCompatActivity {
 
         new Handler().postDelayed(() -> createAccountBtn.setBackground(normalRectangleBackground), 500);
     }
+
 
 
     /**
@@ -266,8 +343,9 @@ public class SignInActivity extends AppCompatActivity {
 
     private void googleSignIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleAuthorization.getGoogleApiClient());
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivityForResult(signInIntent, GOOGLE_SING_IN);
     }
+
 
 
     @Override
@@ -275,18 +353,20 @@ public class SignInActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+        if (requestCode == GOOGLE_SING_IN) {
+            Task<GoogleSignInAccount> task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                // Google Sign In was successful, authenticate with Firebase
+                // Google Sign In was successful, authenticate with FireBase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 googleAuthorization.fireBaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(this,"Google Sign In failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Google Sign In failed", Toast.LENGTH_SHORT).show();
             }
         }
-        stopProgressAnimation();
+
+        // Pass the activity result back to the Facebook SDK
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -309,9 +389,9 @@ public class SignInActivity extends AppCompatActivity {
 
 
     /**
-     *  Create new user
+     * Create new user
      *
-     * @param email email of new user
+     * @param email    email of new user
      * @param password password if new user
      */
     public void registration(String email, String password) {

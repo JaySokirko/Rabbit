@@ -121,7 +121,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="60dp"
-        android:alpha="0"
+        android:alpha="1"
         android:orientation="horizontal">
 
         <TextView
@@ -153,14 +153,30 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <ImageView
+        <FrameLayout
             android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:background="@drawable/shape_circle_white"
-            android:contentDescription="@drawable/shape_circle_white"
-            android:padding="8dp"
-            android:src="@drawable/ic_facebook" />
+            android:layout_height="60dp">
+
+            <ImageView
+                android:id="@+id/facebook_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle_white"
+                android:contentDescription="@drawable/shape_circle_white"
+                android:padding="8dp"
+                android:src="@drawable/ic_facebook" />
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/facebook_login"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:alpha="0"
+                android:onClick="onFaceBookSignIn" />
+
+        </FrameLayout>
+
 
         <Space
             android:layout_width="0dp"

@@ -29,7 +29,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jay.rabbit.R;
 import com.jay.rabbit.firebase.GoogleSignIn;
-import com.jay.rabbit.ui.activity.animation.Animation;
+import com.jay.rabbit.ui.animation.Animation;
 import com.jay.rabbit.ui.activity.mainscreen.MainScreenActivity;
 
 /**

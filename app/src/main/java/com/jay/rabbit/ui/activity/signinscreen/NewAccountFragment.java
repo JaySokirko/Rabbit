@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.jay.rabbit.R;
-import com.jay.rabbit.ui.activity.animation.Animation;
+import com.jay.rabbit.ui.animation.Animation;
 
 
 /**

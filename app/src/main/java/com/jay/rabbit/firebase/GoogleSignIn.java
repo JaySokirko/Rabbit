@@ -16,7 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.jay.rabbit.R;
-import com.jay.rabbit.activity.AuthorizedUserActivity;
+import com.jay.rabbit.ui.activity.mainscreen.MainScreenActivity;
 
 public class GoogleSignIn {
 
@@ -42,7 +42,7 @@ public class GoogleSignIn {
             if (fireBaseAuth.getCurrentUser() != null) {
 
                 activity.finish();
-                activity.startActivity(new Intent(activity, AuthorizedUserActivity.class));
+                activity.startActivity(new Intent(activity, MainScreenActivity.class));
             }
         };
     }

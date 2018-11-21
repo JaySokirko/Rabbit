@@ -1,0 +1,94 @@
+<RelativeLayout
+    android:id="@+id/parent_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient_list">
+
+
+    <ImageView
+        android:id="@+id/avatar_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/ic_action_add"
+        android:background="@drawable/shape_circle_white"/>
+
+    <EditText
+        android:id="@+id/edit_email"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/avatar_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:inputType="textEmailAddress"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorGray50"
+        android:textSize="16sp"
+        android:hint="@string/email"
+        android:gravity="center"
+        android:background="@drawable/shape_bottom_lef_corner_0"/>
+
+    <EditText
+        android:id="@+id/edit_nick_name"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/edit_email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:inputType="textPersonName"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorGray50"
+        android:textSize="16sp"
+        android:hint="@string/nick_name"
+        android:gravity="center"
+        android:background="@drawable/shape_bottom_lef_corner_0"/>
+
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/edit_nick_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:inputType="textPassword"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorGray50"
+        android:textSize="16sp"
+        android:hint="@string/password"
+        android:gravity="center"
+        android:background="@drawable/shape_bottom_lef_corner_0"/>
+
+    <Button
+        android:id="@+id/accept_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/edit_password"
+        android:layout_below="@id/edit_password"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/shape_rounded_rectangle_white"
+        android:textColor="@color/colorWhite"
+        android:text="@string/accept" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignStart="@+id/edit_email"
+        android:layout_alignBottom="@+id/accept_button"
+        app:srcCompat="@drawable/logo_rabbit_with_circle"
+        android:visibility="gone"/>
+
+</RelativeLayout>

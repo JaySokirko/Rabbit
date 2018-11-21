@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_gradient_list"
+    android:background="@color/colorTransparent"
     android:orientation="vertical"
-    tools:context=".activity.SignInActivity">
+    tools:context=".ui.activity.signinscreen.AuthorizationActivity">
 
     <ImageView
         android:id="@+id/image_view_logo"
@@ -84,7 +83,6 @@
         android:layout_marginTop="30dp"
         android:alpha="0"
         android:background="@drawable/shape_rounded_rectangle_white"
-        android:onClick="onCreateNewUserClick"
         android:paddingStart="16sp"
         android:paddingTop="8dp"
         android:paddingEnd="16sp"
@@ -96,7 +94,7 @@
 
 
     <Button
-        android:id="@+id/button_sing_up"
+        android:id="@+id/button_sing_in"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/registration_form_layout"
@@ -104,7 +102,6 @@
         android:layout_marginTop="30dp"
         android:alpha="0"
         android:background="@drawable/shape_rounded_rectangle_white"
-        android:onClick="onSignInClick"
         android:paddingStart="16sp"
         android:paddingTop="8dp"
         android:paddingEnd="16sp"
@@ -112,7 +109,7 @@
         android:text="@string/sign_up"
         android:textAllCaps="false"
         android:textColor="@color/colorGray50"
-        android:textSize="16sp" />
+        android:textSize="16sp"/>
 
 
     <LinearLayout
@@ -121,8 +118,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="60dp"
-        android:alpha="1"
+        android:alpha="0"
         android:orientation="horizontal">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -130,7 +132,8 @@
             android:layout_marginStart="20dp"
             android:text="@string/sign_in_with"
             android:textColor="@color/colorWhite"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"/>
 
         <Space
             android:layout_width="0dp"
@@ -144,7 +147,6 @@
             android:layout_gravity="center"
             android:background="@drawable/shape_circle_white"
             android:contentDescription="@drawable/shape_circle_white"
-            android:onClick="onGoogleSignIn"
             android:padding="8dp"
             android:src="@drawable/ic_google" />
 
@@ -153,29 +155,6 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <FrameLayout
-            android:layout_width="60dp"
-            android:layout_height="60dp">
-
-            <ImageView
-                android:id="@+id/facebook_button"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:background="@drawable/shape_circle_white"
-                android:contentDescription="@drawable/shape_circle_white"
-                android:padding="8dp"
-                android:src="@drawable/ic_facebook" />
-
-            <com.facebook.login.widget.LoginButton
-                android:id="@+id/facebook_login"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:alpha="0"
-                android:onClick="onFaceBookSignIn" />
-
-        </FrameLayout>
 
 
         <Space
@@ -183,19 +162,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:background="@drawable/shape_circle_white"
-            android:contentDescription="@drawable/shape_circle_white"
-            android:padding="8dp"
-            android:src="@drawable/ic_twitter" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
     </LinearLayout>
 

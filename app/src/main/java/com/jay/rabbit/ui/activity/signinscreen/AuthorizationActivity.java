@@ -32,7 +32,7 @@ public class AuthorizationActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         SignInFragment signInFragment = new SignInFragment();
 
-        transaction.add(R.id.fragment_container, signInFragment);
+        transaction.replace(R.id.fragment_container, signInFragment);
         transaction.commit();
     }
 

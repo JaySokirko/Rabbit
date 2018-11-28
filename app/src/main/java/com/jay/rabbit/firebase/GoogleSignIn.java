@@ -56,11 +56,10 @@ public class GoogleSignIn {
                 .requestEmail()
                 .build();
 
-        return new GoogleApiClient.Builder(activity.getApplicationContext())
-                .enableAutoManage(activity, connectionResult -> {
 
-                    Toast.makeText(activity, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                })
+        return new GoogleApiClient.Builder(activity.getApplicationContext())
+                .enableAutoManage(activity, connectionResult ->
+                        Toast.makeText(activity, connectionResult.getErrorMessage(), Toast.LENGTH_SHORT).show())
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }

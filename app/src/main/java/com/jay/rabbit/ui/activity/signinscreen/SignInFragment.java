@@ -9,7 +9,10 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +32,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jay.rabbit.R;
 import com.jay.rabbit.firebase.GoogleSignIn;
-import com.jay.rabbit.ui.animation.Animation;
 import com.jay.rabbit.ui.activity.mainscreen.MainScreenActivity;
+import com.jay.rabbit.ui.animation.Animation;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -86,7 +89,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
         googleAuthorization = new GoogleSignIn(activity, mAuth);
         authStateListener = googleAuthorization.getAuthStateListener();
-        googleApiClient = googleAuthorization.getGoogleApiClient();
 
         animationOnFragmentStart();
 
@@ -95,20 +97,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
         signIpBtn.setOnClickListener(this);
         googleLoginBtn.setOnClickListener(this);
+        createAccountBtn.setOnClickListener(this);
 
-//        new Handler().postDelayed(() -> {
-//
-//            FragmentManager fragmentManager = activity.getSupportFragmentManager();
-//            FragmentTransaction transaction = fragmentManager.beginTransaction();
-//            NewAccountFragment accountFragment = new NewAccountFragment();
-//
-//            transaction.add(R.id.fragment_container, accountFragment)
-//            .setCustomAnimations(R.anim.appear, R.anim.disappear, R.anim.disappear, R.anim.appear);
-//            transaction.commit();
-//        },3000);
+        Animation.initDrawableRes(context);
 
-        Animation.initBackground(context);
-
+        emailEditText.setText("sokirko0601@gmail.com");
         return view;
     }
 
@@ -146,6 +139,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
 
+//        if (googleApiClient != null && !googleApiClient.isConnected()){
+
+            googleApiClient = googleAuthorization.getGoogleApiClient();
+//        }
+
         mAuth.addAuthStateListener(authStateListener);
     }
 
@@ -154,8 +152,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
 
-        googleApiClient.stopAutoManage(activity);
-        googleApiClient.disconnect();
+        if (googleApiClient!= null && googleApiClient.isConnected()) {
+
+            googleApiClient.stopAutoManage(activity);
+            googleApiClient.disconnect();
+        }
     }
 
     /**
@@ -182,8 +183,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
 
     /**
-     * Email edit text click listener.
-     * If the user starts typing, the error will disappear.
+     * If the user starts typing, the email error disappears.
      */
     @SuppressLint("ClickableViewAccessibility")
     private void onEmailEditTextClickListener() {
@@ -198,8 +198,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
 
     /**
-     * Password edit text click listener.
-     * If the user starts typing, the error will disappear.
+     * IIf the user starts typing, the password error disappears.
      */
     @SuppressLint("ClickableViewAccessibility")
     private void onPasswordEditTextClickListener() {
@@ -255,7 +254,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                     } else {
                         // If sign in fails, display a message to the user.
                         if (task.getException() != null) {
-                            Snackbar.make(parentView, task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(parentView, getResources().getString(R.string.sign_in_with_goole),
+                                    Snackbar.LENGTH_LONG).show();
                         }
                     }
                     Animation.stopProgressAnimation(logoImView);
@@ -305,19 +305,36 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    private void onCreateNewAccount(){
+
+        Animation.onButtonPressed(createAccountBtn);
+
+        FragmentManager manager = getFragmentManager();
+        if (manager != null) {
+            FragmentTransaction transaction = manager.beginTransaction();
+            NewAccountFragment fragment = new NewAccountFragment();
+            transaction.setCustomAnimations(R.anim.appear, R.anim.disappear);
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.commit();
+        }
+    }
+
+
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
 
-            //sign in button
             case R.id.button_sing_in:
                 onSignIn();
                 break;
 
-            //google sign in button
             case R.id.google_login:
                 onGoogleSignIn();
+                break;
+
+            case R.id.button_new_account:
+                onCreateNewAccount();
                 break;
         }
     }

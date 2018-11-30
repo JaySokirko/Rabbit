@@ -65,12 +65,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private LinearLayout registrationLayout;
     private Button signIpBtn;
     private ImageView logoImView;
-    private LinearLayout signInLayout;
+
     private Button forgotPasswordBtn;
     private Button createAccountBtn;
     private TextView emailErrorTextView;
     private TextView passwordErrorTextView;
-    private ImageView googleLoginBtn;
+
     private RelativeLayout parentView;
 
     @Override
@@ -96,7 +96,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         onPasswordEditTextClickListener();
 
         signIpBtn.setOnClickListener(this);
-        googleLoginBtn.setOnClickListener(this);
         createAccountBtn.setOnClickListener(this);
 
         Animation.initDrawableRes(context);
@@ -114,10 +113,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         registrationLayout = view.findViewById(R.id.registration_form_layout);
         signIpBtn = view.findViewById(R.id.button_sing_in);
         logoImView = view.findViewById(R.id.image_view_logo);
-        signInLayout = view.findViewById(R.id.layout_sign_in);
+
         forgotPasswordBtn = view.findViewById(R.id.button_forgot_password);
         createAccountBtn = view.findViewById(R.id.button_new_account);
-        googleLoginBtn = view.findViewById(R.id.google_login);
+
         parentView = view.findViewById(R.id.parent_view);
         emailErrorTextView = view.findViewById(R.id.text_view_email_error);
         emailErrorTextView.setVisibility(View.INVISIBLE);
@@ -175,7 +174,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
             registrationLayout.animate().setDuration(1000).alpha(1).start();
             signIpBtn.animate().setDuration(1000).alpha(1).start();
-            signInLayout.animate().setDuration(1000).alpha(1).start();
             forgotPasswordBtn.animate().setDuration(1000).alpha(1).start();
             createAccountBtn.animate().setDuration(1000).alpha(1).start();
         }, 1500);
@@ -254,7 +252,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                     } else {
                         // If sign in fails, display a message to the user.
                         if (task.getException() != null) {
-                            Snackbar.make(parentView, getResources().getString(R.string.sign_in_with_goole),
+                            Snackbar.make(parentView, task.getException().getMessage(),
                                     Snackbar.LENGTH_LONG).show();
                         }
                     }
@@ -263,26 +261,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    /**
-     * Sign in with google.
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    public void onGoogleSignIn() {
-
-        Animation.onImagePressed(googleLoginBtn);
-        Animation.startProgressAnimation(logoImView);
-        try {
-            googleSignIn();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void googleSignIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        startActivityForResult(signInIntent, GOOGLE_SING_IN);
-    }
 
 
     @Override
@@ -327,10 +305,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
             case R.id.button_sing_in:
                 onSignIn();
-                break;
-
-            case R.id.google_login:
-                onGoogleSignIn();
                 break;
 
             case R.id.button_new_account:

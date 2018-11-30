@@ -112,59 +112,6 @@
         android:textSize="16sp"/>
 
 
-    <LinearLayout
-        android:id="@+id/layout_sign_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
-        android:alpha="0"
-        android:orientation="horizontal">
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:text="@string/sign_in_with"
-            android:textColor="@color/colorWhite"
-            android:textSize="14sp"
-            android:layout_gravity="center_vertical"/>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <ImageView
-            android:id="@+id/google_login"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:background="@drawable/shape_circle_white"
-            android:contentDescription="@drawable/shape_circle_white"
-            android:padding="8dp"
-            android:src="@drawable/ic_google" />
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-
-
-    </LinearLayout>
 
     <Button
         android:id="@+id/button_forgot_password"

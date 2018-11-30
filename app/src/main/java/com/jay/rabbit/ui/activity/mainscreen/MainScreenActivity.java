@@ -2,16 +2,18 @@ package com.jay.rabbit.ui.activity.mainscreen;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,10 +24,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jay.rabbit.R;
+import com.jay.rabbit.model.User;
 import com.jay.rabbit.ui.activity.signinscreen.AuthorizationActivity;
+import com.squareup.picasso.Picasso;
 
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,16 +37,12 @@ public class MainScreenActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private SharedPreferences preferences;
-    private TextView userNameTextView;
-    private CircleImageView userPhotoImageView;
-    private Bitmap bitmap;
+    private TextView userNameTV;
+    private CircleImageView userPhotoIV;
     private String TAG = "LOG_TAG";
     private DatabaseReference databaseReference;
-
-    private EditText enterMessageET;
-    private Button sendMessageBtn;
-    private TextView receiveMessageTV;
-    private StringBuilder s;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
 
     @Override
@@ -53,72 +52,119 @@ public class MainScreenActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences("Settings", MODE_PRIVATE);
 
-        String userName = preferences.getString("user_name", "User Name");
-
-        userNameTextView = findViewById(R.id.nick_name);
-        userNameTextView.setText(userName);
-
-        userPhotoImageView = findViewById(R.id.profile_image);
+        userNameTV = findViewById(R.id.user_name);
+        userPhotoIV = findViewById(R.id.profile_image);
+        tabLayout = findViewById(R.id.tab_layout);
+        viewPager = findViewById(R.id.view_pager);
 
         auth = FirebaseAuth.getInstance();
-
-        setUserImage();
-
-
-        enterMessageET = findViewById(R.id.test_edit);
-        sendMessageBtn = findViewById(R.id.test_send);
-        receiveMessageTV = findViewById(R.id.test_message);
-
-        databaseReference = FirebaseDatabase.getInstance().getReference();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        Log.d(TAG, "onCreate: " + currentUser.getUid());
-
-        sendMessageBtn.setOnClickListener(v -> databaseReference
-                .child(currentUser.getUid())
-                .child("Message")
-                .push()
-                .setValue(enterMessageET.getText().toString()));
-
-        s = new StringBuilder();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users")
+                .child(currentUser.getUid());
 
 
-      databaseReference.addValueEventListener(new ValueEventListener() {
-          @Override
-          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        setUpToolBar();
 
-              Iterator iterator = dataSnapshot.getChildren().iterator();
 
-              while (iterator.hasNext()){
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
 
-                  s.append(((DataSnapshot)iterator.next()).getValue());
-                  Log.d(TAG, "onDataChange: " + s);
-              }
-          }
+                if (user != null) {
+                    userNameTV.setText(user.getUserName());
+                    Picasso.get().load(user.getUserImage()).into(userPhotoIV);
+                }
+            }
 
-          @Override
-          public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-          }
-      });
+            }
+        });
+
+
+        setUpViewPager();
     }
 
 
-    public void signOut(View view) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-        auth.signOut();
-        startActivity(new Intent(this, AuthorizationActivity.class));
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.log_out:
+                auth.signOut();
+                startActivity(new Intent(this, AuthorizationActivity.class));
+                finish();
+                break;
+        }
+
+        return true;
     }
 
 
-    private void setUserImage() {
+    private void setUpToolBar() {
 
-        String encoded = preferences.getString("user_image", "");
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
 
-        byte[] imageAsBytes = Base64.decode(encoded.getBytes(), Base64.DEFAULT);
-        userPhotoImageView.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+        }
+    }
 
-//        Uri uri = Uri.parse(preferences.getString("user photo", "def"));
-//        Picasso.get().load(bitmap).into(userPhotoImageView);
+
+    private void setUpViewPager() {
+        ViewPagerAdapter pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        pagerAdapter.addFragment(new ChatsFragment(), "Chats");
+        pagerAdapter.addFragment(new UsersFragment(), "Users");
+        pagerAdapter.addFragment(new ProfileFragment(), "Profile");
+
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+
+        private ArrayList<Fragment> fragments;
+        private ArrayList<String> titles;
+
+        ViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+            this.fragments = new ArrayList<>();
+            this.titles = new ArrayList<>();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
+
+
+        void addFragment(Fragment fragment, String title) {
+            fragments.add(fragment);
+            titles.add(title);
+        }
+
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titles.get(position);
+        }
     }
 }

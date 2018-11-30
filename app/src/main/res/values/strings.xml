@@ -22,6 +22,13 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="accept">Accept</string>
     <string name="nick_name">nick name</string>
+    <string name="sign_in_with_goole">You must be logged in via Google account on this device.</string>
+    <string name="enter_your_nick_name">Nickname can not be empty</string>
+    <string name="select_profile_foto">CChoose your profile picture</string>
+    <string name="cancel">Cancel</string>
+    <string name="user_name">user name</string>
+    <string name="logout">Logout</string>
+    <string name="enter_a_message">type a message</string>
 
 
 </resources>

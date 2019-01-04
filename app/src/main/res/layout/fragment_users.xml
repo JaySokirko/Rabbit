@@ -4,10 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.jay.rabbit.ui.activity.mainscreen.UsersFragment"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/search_users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/search_users"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_users"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

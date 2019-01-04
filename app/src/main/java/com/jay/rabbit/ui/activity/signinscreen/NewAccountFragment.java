@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +26,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.jay.rabbit.R;
 import com.jay.rabbit.ui.activity.mainscreen.MainScreenActivity;
-import com.jay.rabbit.ui.animation.Animation;
+import com.jay.rabbit.animation.Animation;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -108,7 +105,6 @@ public class NewAccountFragment extends Fragment {
         nickNameErrorTextView = view.findViewById(R.id.text_view_nick_name_error);
 
         activity = (AppCompatActivity) getActivity();
-
 
         Animation.initDrawableRes(context);
 
@@ -210,6 +206,8 @@ public class NewAccountFragment extends Fragment {
                         hashMap.put("id", userID);
                         hashMap.put("userName", nameEditText.getText().toString());
                         hashMap.put("userImage", "default");
+                        hashMap.put("status", "offline");
+                        hashMap.put("search", nameEditText.getText().toString().toLowerCase());
 
                         dbReference.setValue(hashMap).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {

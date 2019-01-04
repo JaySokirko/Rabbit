@@ -16,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <!---->
         <activity
             android:name=".ui.activity.signinscreen.AuthorizationActivity"
             android:theme="@style/NoActionBar">
@@ -27,13 +27,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!---->
         <activity
             android:name=".ui.activity.mainscreen.MainScreenActivity"
             android:theme="@style/NoActionBar" />
-
-        <activity android:name=".ui.activity.MessageActivity"
-            android:theme="@style/NoActionBar"/>
-
+        <!---->
+        <activity
+            android:name=".ui.activity.MessageActivity"
+            android:theme="@style/NoActionBar" />
+        <!---->
+        <activity android:name=".ui.activity.ResetPasswordActivity"
+            android:theme="@style/NoActionBar"
+            android:parentActivityName=".ui.activity.signinscreen.AuthorizationActivity"/>
+        <!---->
+        <service android:name=".firebase.MyFireBaseIdService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <!---->
+        <service android:name=".firebase.MyFireBaseMessaging"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <!---->
     </application>
+
 </manifest>

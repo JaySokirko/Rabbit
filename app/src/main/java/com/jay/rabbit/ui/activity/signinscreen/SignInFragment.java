@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,8 +30,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jay.rabbit.R;
 import com.jay.rabbit.firebase.GoogleSignIn;
+import com.jay.rabbit.ui.activity.ResetPasswordActivity;
 import com.jay.rabbit.ui.activity.mainscreen.MainScreenActivity;
-import com.jay.rabbit.ui.animation.Animation;
+import com.jay.rabbit.animation.Animation;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -101,9 +100,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         Animation.initDrawableRes(context);
 
         emailEditText.setText("sokirko0601@gmail.com");
+
+        forgotPasswordBtn.setOnClickListener(v -> {
+            Animation.onButtonPressed(forgotPasswordBtn);
+            context.startActivity(new Intent(context, ResetPasswordActivity.class));
+        });
+
         return view;
     }
-
 
 
     private void initializeViews(View view) {
@@ -138,10 +142,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
 
-//        if (googleApiClient != null && !googleApiClient.isConnected()){
+        if (googleApiClient != null && !googleApiClient.isConnected()) {
 
             googleApiClient = googleAuthorization.getGoogleApiClient();
-//        }
+        }
 
         mAuth.addAuthStateListener(authStateListener);
     }
@@ -151,7 +155,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
 
-        if (googleApiClient!= null && googleApiClient.isConnected()) {
+        if (googleApiClient != null && googleApiClient.isConnected()) {
 
             googleApiClient.stopAutoManage(activity);
             googleApiClient.disconnect();
@@ -210,7 +214,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
     /**
      * If the user already has an account, then he is authorized
      */
@@ -261,8 +264,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
 
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -283,7 +284,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private void onCreateNewAccount(){
+    private void onCreateNewAccount() {
 
         Animation.onButtonPressed(createAccountBtn);
 

@@ -69,6 +69,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             Picasso.get().load(imageUrl).into(holder.profilePhoto);
         }
 
+        if (position == chat.size() - 1){
+
+            if (ch.isIsseen()){
+                holder.seenMessage.setText(context.getResources().getString(R.string.seen));
+
+            } else {
+                holder.seenMessage.setText(context.getResources().getString(R.string.delivered));
+            }
+        } else {
+            holder.seenMessage.setVisibility(View.GONE);
+        }
+
     }
 
 
@@ -82,12 +94,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         private TextView showMessage;
         private ImageView profilePhoto;
+        private TextView seenMessage;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             showMessage = itemView.findViewById(R.id.show_message);
             profilePhoto = itemView.findViewById(R.id.profile_image);
+            seenMessage = itemView.findViewById(R.id.message_seen);
         }
     }
 

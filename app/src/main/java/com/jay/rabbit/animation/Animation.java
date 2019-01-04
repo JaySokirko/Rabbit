@@ -1,4 +1,4 @@
-package com.jay.rabbit.ui.animation;
+package com.jay.rabbit.animation;
 
 import android.content.Context;
 import android.graphics.drawable.Animatable;
@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.jay.rabbit.R;
 
